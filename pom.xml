@@ -1,0 +1,99 @@
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;project xmlns=&quot;http://maven.apache.org/POM/4.0.0&quot;
+xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+xsi:schemaLocation=&quot;http://maven.apache.org/POM/4.0.0
+http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;&gt;
+&lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+&lt;groupId&gt;org.example&lt;/groupId&gt;
+&lt;artifactId&gt;untitled&lt;/artifactId&gt;
+&lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+&lt;properties&gt;
+&lt;maven.compiler.source&gt;21&lt;/maven.compiler.source&gt;
+&lt;maven.compiler.target&gt;21&lt;/maven.compiler.target&gt;
+&lt;project.build.sourceEncoding&gt;UTF-8&lt;/project.build.sourceEncoding&gt;
+&lt;/properties&gt;
+&lt;dependencies&gt;
+&lt;dependency&gt;
+&lt;groupId&gt;org.hibernate.orm&lt;/groupId&gt;
+&lt;artifactId&gt;hibernate-core&lt;/artifactId&gt;
+&lt;version&gt;6.4.4.Final&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+&lt;groupId&gt;com.mysql&lt;/groupId&gt;
+&lt;artifactId&gt;mysql-connector-j&lt;/artifactId&gt;
+&lt;version&gt;8.3.0&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+&lt;groupId&gt;jakarta.persistence&lt;/groupId&gt;
+&lt;artifactId&gt;jakarta.persistence-api&lt;/artifactId&gt;
+&lt;version&gt;3.1.0&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;/dependencies&gt;
+&lt;/project&gt;
+
+3
+/* persistence.xml&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;persistence xmlns=&quot;https://jakarta.ee/xml/ns/persistence&quot;
+version=&quot;3.0&quot;&gt;
+&lt;persistence-unit name=&quot;miUnidad&quot;&gt;
+&lt;properties&gt;
+&lt;property name=&quot;jakarta.persistence.jdbc.driver&quot;
+value=&quot;com.mysql.cj.jdbc.Driver&quot;/&gt;
+&lt;property name=&quot;jakarta.persistence.jdbc.url&quot;
+value=&quot;jdbc:mysql://localhost:3306/orm_test&quot;/&gt;
+&lt;property name=&quot;jakarta.persistence.jdbc.user&quot;
+value=&quot;root&quot;/&gt;
+&lt;property name=&quot;jakarta.persistence.jdbc.password&quot;
+value=&quot;&quot;/&gt;
+&lt;property name=&quot;hibernate.dialect&quot;
+value=&quot;org.hibernate.dialect.MySQLDialect&quot;/&gt;
+&lt;property name=&quot;hibernate.hbm2ddl.auto&quot;
+value=&quot;update&quot;/&gt;
+&lt;property name=&quot;hibernate.show_sql&quot;
+value=&quot;true&quot;/&gt;
+&lt;/properties&gt;
+&lt;/persistence-unit&gt;
+&lt;/persistence&gt;
+
+Mi Ejemplo De Controladores:
+package org.example;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
+import java.util.List;
+public class Main {
+public static void main(String[] args) {
+EntityManagerFactory emf =
+Persistence.createEntityManagerFactory(&quot;miUnidad&quot;); //abreConexion
+EntityManager em = emf.createEntityManager();
+Usuario usuario = new Usuario();
+int id = 1;
+List&lt;Usuario&gt; usuarios = em.createQuery(&quot;FROM Usuario WHERE nombre =
+:nombre &quot;,
+Usuario.class).setParameter(&quot;nombre&quot;, &quot;Nahuel&quot;).getResultList();
+
+//crear
+em.getTransaction().begin();
+em.persist(usuario);
+em.getTransaction().commit();
+//eliminar
+em.getTransaction().begin();
+Usuario usuarioEncontrado = em.find(Usuario.class, id);
+if(usuarioEncontrado != null){
+em.remove(usuarioEncontrado);
+}
+em.getTransaction().commit();
+//usuario a editar
+Usuario encontrado = em.find(Usuario.class, 1);
+
+//edit
+em.getTransaction().begin();
+encontrado.setNombre(&quot;traniela&quot;);
+em.getTransaction().commit();
+em.getTransaction().begin();
+em.remove(encontrado);
+em.getTransaction().commit();
+em.close();
+emf.close(); //cierra conexion
+}
+}
